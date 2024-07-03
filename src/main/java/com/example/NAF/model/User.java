@@ -8,8 +8,7 @@ import jakarta.persistence.*;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="USER_IDENTIFIER")
+    @Column(name="USER_IDENTIFIER" ,length = 50, nullable = false, unique = true)
     private Integer userIdentifier;
 
     @Column(name="firstName")
