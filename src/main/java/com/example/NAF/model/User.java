@@ -2,27 +2,29 @@ package com.example.NAF.model;
 
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 @Entity
 @Table(name ="USER")
+@Data
 public class User {
 
     @Id
     @Column(name="USER_IDENTIFIER" ,length = 50, nullable = false, unique = true)
-    private Integer userIdentifier;
+    private String userIdentifier;
 
-    @Column(name="firstName")
+    @Column(name="FIRST_NAME")
     private String firstName;
 
-    @Column(name = "lastName")
+    @Column(name = "LAST_NAME")
     private String lastName;
 
-    @Column(name = "email")
+    @Column(name = "EMAIL")
     private String email;
 
-    @Column(name = "password")
+    @Column(name = "PASSWORD")
     private String password;
 
-    @Column(name = "active_Indicator")
+    @Column(name = "ACTIVE_INDICATOR")
     private String activeIndicator;
 }
