@@ -10,9 +10,9 @@ import java.io.Serializable;
 @Data
 public class Parameter implements Serializable {
 
-    @Column(name = "PARAMETER_GROUP")
+    @Column(name = "PARAMETER_GROUP",length = 50, nullable = false, unique = true)
     private String parameterGroup;
 
-    @Column(name = "PARAMETER_CODE")
+    @Column(name = "PARAMETER_CODE",length = 50, nullable = false, unique = true)
     private String parameterCode;
 }
