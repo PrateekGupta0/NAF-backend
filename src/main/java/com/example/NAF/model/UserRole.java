@@ -26,6 +26,6 @@ public class UserRole {
     private String userTask;
 
     @Column(name = "ACTIVE_INDICATOR")
-    private String activeIndicator;
+    private Boolean activeIndicator;
 
 }

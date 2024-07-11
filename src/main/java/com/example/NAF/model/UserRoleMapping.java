@@ -19,6 +19,6 @@ public class UserRoleMapping {
     private Date creationDate;
 
     @Column(name = "ACTIVE_INDICATOR")
-    private String activeIndicator;
+    private Boolean activeIndicator;
 
 }

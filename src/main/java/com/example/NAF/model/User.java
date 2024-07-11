@@ -26,5 +26,5 @@ public class User {
     private String password;
 
     @Column(name = "ACTIVE_INDICATOR")
-    private String activeIndicator;
+    private Boolean activeIndicator;
 }
