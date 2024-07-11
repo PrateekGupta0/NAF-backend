@@ -2,12 +2,15 @@ package com.example.NAF.dao;
 
 
 import com.example.NAF.model.User;
+import com.example.NAF.utils.UserSearchDb;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -26,4 +29,12 @@ public interface UserRepository extends JpaRepository<User, Long> {
                            @Param("email") String email,
                            @Param("password") String password,
                            @Param("activeIndicator") Boolean activeIndicator);
+
+
+
+    @Modifying
+    @Transactional
+    @Query("SELECT new com.example.NAF.utils.UserSearchDb(u.userIdentifier, u.firstName, u.lastName, u.email, u.activeIndicator, urm.creationDate) " +
+            "FROM User u JOIN UserRoleMapping urm ON u.userIdentifier = urm.userRoleMappingId.user.userIdentifier")
+    List<UserSearchDb[]> findAllUsersWithRoleMappings();
 }
