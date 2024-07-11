@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 @RestController
+@RequestMapping("/admin")
 public class NafController {
 
     @Autowired

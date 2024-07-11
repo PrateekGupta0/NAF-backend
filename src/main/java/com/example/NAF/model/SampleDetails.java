@@ -3,6 +3,8 @@ package com.example.NAF.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.Date;
+
 @Data
 @Entity
 @Table(name = "SAMPLE_DETAILS")
@@ -32,10 +34,10 @@ public class SampleDetails {
     private String testStatusCode;
 
     @Column(name = "TEST_ANALYSIS_START_DATE")
-    private String testAnalysisStartDate;
+    private Date testAnalysisStartDate;
 
     @Column(name = "TEST_ANALYSIS_END_DATE")
-    private String testAnalysisEndDate;
+    private Date testAnalysisEndDate;
 
 
     @ManyToOne(cascade = CascadeType.ALL)
