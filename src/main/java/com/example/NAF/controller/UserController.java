@@ -6,15 +6,14 @@ import com.example.NAF.dao.SampleDetailRepository;
 import com.example.NAF.services.JwtTokenService;
 import com.example.NAF.utils.CustomerDetailVO;
 import com.example.NAF.utils.SampleDetailVO;
+import com.example.NAF.utils.UserTokenVO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 
 @RestController
 @RequestMapping("/customer")
@@ -32,15 +31,15 @@ public class UserController {
     @PostMapping("/add-customer")
     public ResponseEntity<String> addCustomer(@RequestBody CustomerDetailVO customerDetailVO,@RequestHeader("token") String token){
 
-        String userId=null ;
+        UserTokenVO userTokenVO =null ;
         try{
-            userId = jwtTokenService.parseToken(token);
+            userTokenVO = jwtTokenService.parseToken(token);
         }
         catch (Exception e){
             return new ResponseEntity<>("User is Unauthorized",HttpStatus.UNAUTHORIZED);
         }
         try{
-            if(userId == null){
+            if(userTokenVO == null){
                 return new ResponseEntity<>("User is Unauthorized",HttpStatus.UNAUTHORIZED);
             }
             customerDetailRepository.insertCustomerDetails(customerDetailVO.getCustomerIdentifier(), customerDetailVO.getFirstName(), customerDetailVO.getLastName(), customerDetailVO.getPhoneNumber()
@@ -55,16 +54,16 @@ public class UserController {
 
     @PostMapping("/add-sample-details")
     public ResponseEntity<String> addSampleDetails(@RequestBody SampleDetailVO sampleDetailVO,@RequestHeader("token") String token){
-        String userId=null ;
+        UserTokenVO userTokenVO=null ;
         try{
-            userId = jwtTokenService.parseToken(token);
+            userTokenVO = jwtTokenService.parseToken(token);
         }
         catch (Exception e){
             return new ResponseEntity<>("User is Unauthorized",HttpStatus.UNAUTHORIZED);
         }
         try{
 
-            if(userId == null){
+            if(userTokenVO == null){
                 return new ResponseEntity<>("User is Unauthorized",HttpStatus.UNAUTHORIZED);
             }
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");

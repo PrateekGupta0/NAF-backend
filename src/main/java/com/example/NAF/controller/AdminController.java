@@ -4,12 +4,8 @@ package com.example.NAF.controller;
 import com.example.NAF.dao.UserRepository;
 import com.example.NAF.dao.UserRoleMappingRepository;
 import com.example.NAF.dao.UserRoleRepository;
-import com.example.NAF.model.User;
-import com.example.NAF.model.UserRoleMapping;
 import com.example.NAF.services.JwtTokenService;
-import com.example.NAF.utils.RoleCodeVO;
-import com.example.NAF.utils.UserDetailVO;
-import com.example.NAF.utils.UserSearchDb;
+import com.example.NAF.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,14 +13,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/admin")
-public class NafController {
+public class AdminController {
 
     @Autowired
     private JwtTokenService jwtTokenService;
@@ -35,18 +28,11 @@ public class NafController {
     @Autowired
     private UserRoleRepository userRoleRepository;
 
-
-
-    @GetMapping(value = "/health")
-    public String health(){
-        return "Server up and running";
-    }
-
     @GetMapping(value = "/get-user-detail")
     public ResponseEntity<List<UserSearchDb[]>> userDetails(@RequestHeader("token") String token){
-        String userId=null ;
+        UserTokenVO userTokenVO=null ;
         try{
-            userId = jwtTokenService.parseToken(token);
+            userTokenVO = jwtTokenService.parseToken(token);
         }
         catch (Exception e){
             return new ResponseEntity<>(null,HttpStatus.UNAUTHORIZED);
@@ -54,7 +40,7 @@ public class NafController {
 
         try{
 
-            if(userId == null){
+            if(userTokenVO == null){
                 return new ResponseEntity<>(null,HttpStatus.UNAUTHORIZED);
             }
             List<UserSearchDb[]> users=userRepository.findAllUsersWithRoleMappings();
@@ -65,40 +51,11 @@ public class NafController {
         }
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<Map<String,Object>> login(@RequestParam String username, @RequestParam String password) {
-
-        try{
-            System.out.println(username+" "+password);
-            User loginDetailDb=userRepository.findByEmail(username);
-            List<UserRoleMapping> userRoleDetails=userRoleMappingRepository.findByUserIdentifier(loginDetailDb.getUserIdentifier());
-            String token = jwtTokenService.generateToken(username);
-            HashMap<String,Object> res=new HashMap<String,Object>();
-            res.put("token",token);
-            res.put("userName",loginDetailDb.getEmail());
-            res.put("roleCode", userRoleDetails.get(0).getUserRoleMappingId().getUserRole().getUserRoleCode());
-            res.put("message", "SUCCESS");
-            return new ResponseEntity<>(res,HttpStatus.OK);
-        }
-        catch (Exception e){
-            e.printStackTrace();
-            HashMap<String,Object> res=new HashMap<String,Object>();
-            res.put("token",null);
-            res.put("userName",null);
-            res.put("roleCode",null);
-            res.put("message","FAILED");
-            return new ResponseEntity<>(res,HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-
-
-    }
-
     @PostMapping(value="/add-user")
     public ResponseEntity<String> addUser(@RequestBody UserDetailVO userDetailVO, @RequestHeader("token") String token){
-        String userId=null ;
+        UserTokenVO userTokenVO=null ;
         try{
-            userId = jwtTokenService.parseToken(token);
+            userTokenVO = jwtTokenService.parseToken(token);
         }
         catch (Exception e){
             return new ResponseEntity<>("Unauthorized user",HttpStatus.UNAUTHORIZED);
@@ -108,7 +65,7 @@ public class NafController {
         String dateString = currentDate.toString();
 
         try{
-            if(userId == null){
+            if(userTokenVO == null){
                 return new ResponseEntity<>("Unauthorized user",HttpStatus.UNAUTHORIZED);
             }
             //insert in "user" table
@@ -126,16 +83,16 @@ public class NafController {
 
     @PostMapping(value="/add-role-code")
     public ResponseEntity<String> addRoleCode(@RequestBody RoleCodeVO roleCodeVO, @RequestHeader("token") String token){
-        String userId=null ;
+        UserTokenVO userTokenVO=null ;
         try{
-            userId = jwtTokenService.parseToken(token);
+            userTokenVO = jwtTokenService.parseToken(token);
         }
         catch (Exception e){
             return new ResponseEntity<>("Unauthorized user",HttpStatus.UNAUTHORIZED);
         }
 
         try{
-            if(userId == null){
+            if(userTokenVO == null){
                 return new ResponseEntity<>("Unauthorized user",HttpStatus.UNAUTHORIZED);
             }
             //insert in "USER_ROLE" table
@@ -148,11 +105,33 @@ public class NafController {
 
     }
 
+    @GetMapping(value = "/role-codes")
+    public ResponseEntity getRoleCodes(@RequestHeader("token") String token) {
+        UserTokenVO userTokenVO=null ;
+        try{
+            userTokenVO = jwtTokenService.parseToken(token);
+        }
+        catch (Exception e){
+            return new ResponseEntity<>("Unauthorized user",HttpStatus.UNAUTHORIZED);
+        }
+
+        try{
+            if(userTokenVO == null){
+                return new ResponseEntity<>("Unauthorized user",HttpStatus.UNAUTHORIZED);
+            }
+//            List<RoleCodeDb> roleCodeDbs = userRoleRepository.findAllUserRoles();
+            return new ResponseEntity<>(userRoleRepository.findAllUserRoles(), HttpStatus.OK);
+        }
+        catch (Exception e){
+            return new ResponseEntity<>("User role fetch request failed",HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @PutMapping("/update-user")
     public ResponseEntity<String> updateUser(@RequestBody UserDetailVO userDetailVO, @RequestHeader("token") String token){
-        String userId=null ;
+        UserTokenVO userTokenVO=null ;
         try{
-            userId = jwtTokenService.parseToken(token);
+            userTokenVO = jwtTokenService.parseToken(token);
         }
         catch (Exception e){
             return new ResponseEntity<>("Unauthorized user",HttpStatus.UNAUTHORIZED);
@@ -161,7 +140,7 @@ public class NafController {
         String dateString = currentDate.toString();
 
         try{
-            if(userId == null){
+            if(userTokenVO == null){
                 return new ResponseEntity<>("Unauthorized user",HttpStatus.UNAUTHORIZED);
             }
             //update in "user" table
@@ -179,9 +158,9 @@ public class NafController {
 
     @PutMapping("/update-role-code")
     public ResponseEntity<String> updateRoleCode(@RequestBody RoleCodeVO roleCodeVO, @RequestHeader("token") String token){
-        String userId=null ;
+        UserTokenVO userTokenVO =null ;
         try{
-            userId = jwtTokenService.parseToken(token);
+            userTokenVO = jwtTokenService.parseToken(token);
         }
         catch (Exception e){
             return new ResponseEntity<>("Unauthorized user",HttpStatus.UNAUTHORIZED);
@@ -190,7 +169,7 @@ public class NafController {
 
         try{
 
-            if(userId == null){
+            if(userTokenVO == null){
                 return new ResponseEntity<>("Unauthorized user",HttpStatus.UNAUTHORIZED);
             }
             //update in "USER_ROLE" table
