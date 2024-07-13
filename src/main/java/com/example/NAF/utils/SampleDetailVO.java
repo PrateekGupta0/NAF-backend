@@ -1,9 +1,6 @@
 package com.example.NAF.utils;
 
 
-import com.example.NAF.model.CustomerDetails;
-import com.example.NAF.model.User;
-import jakarta.persistence.*;
 import lombok.Data;
 
 @Data

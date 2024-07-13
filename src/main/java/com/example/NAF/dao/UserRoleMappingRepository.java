@@ -8,6 +8,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 
 @Repository
 public interface UserRoleMappingRepository extends JpaRepository<UserRoleMapping, Long> {
@@ -24,4 +26,8 @@ public interface UserRoleMappingRepository extends JpaRepository<UserRoleMapping
                                       @Param("userRoleCode") String userRoleCode,
                                       @Param("creationDate") String creationDate,
                                       @Param("activeIndicator") Boolean activeIndicator);
+
+
+    @Query("SELECT urm FROM UserRoleMapping urm WHERE urm.userRoleMappingId.user.userIdentifier = :userIdentifier")
+    List<UserRoleMapping> findByUserIdentifier(@Param("userIdentifier") String userIdentifier);
 }

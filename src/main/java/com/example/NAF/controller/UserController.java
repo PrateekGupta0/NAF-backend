@@ -6,15 +6,14 @@ import com.example.NAF.dao.SampleDetailRepository;
 import com.example.NAF.services.JwtTokenService;
 import com.example.NAF.utils.CustomerDetailVO;
 import com.example.NAF.utils.SampleDetailVO;
+import com.example.NAF.utils.UserTokenVO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 
 @RestController
 @RequestMapping("/customer")
@@ -30,9 +29,19 @@ public class UserController {
     private SampleDetailRepository sampleDetailRepository;
 
     @PostMapping("/add-customer")
-    public ResponseEntity<String> addCustomer(@RequestBody CustomerDetailVO customerDetailVO){
-        try{
+    public ResponseEntity<String> addCustomer(@RequestBody CustomerDetailVO customerDetailVO,@RequestHeader("token") String token){
 
+        UserTokenVO userTokenVO =null ;
+        try{
+            userTokenVO = jwtTokenService.parseToken(token);
+        }
+        catch (Exception e){
+            return new ResponseEntity<>("User is Unauthorized",HttpStatus.UNAUTHORIZED);
+        }
+        try{
+            if(userTokenVO == null){
+                return new ResponseEntity<>("User is Unauthorized",HttpStatus.UNAUTHORIZED);
+            }
             customerDetailRepository.insertCustomerDetails(customerDetailVO.getCustomerIdentifier(), customerDetailVO.getFirstName(), customerDetailVO.getLastName(), customerDetailVO.getPhoneNumber()
             , customerDetailVO.getEmail(), customerDetailVO.getAddressLineOne(),customerDetailVO.getAddressLineTwo(),customerDetailVO.getCity(),customerDetailVO.getStateCode(), customerDetailVO.getPinCode());
             return new ResponseEntity<>("Customer added Successfully",HttpStatus.OK);
@@ -45,8 +54,18 @@ public class UserController {
 
     @PostMapping("/add-sample-details")
     public ResponseEntity<String> addSampleDetails(@RequestBody SampleDetailVO sampleDetailVO,@RequestHeader("token") String token){
-        String customerId=jwtTokenService.parseToken(token);
+        UserTokenVO userTokenVO=null ;
         try{
+            userTokenVO = jwtTokenService.parseToken(token);
+        }
+        catch (Exception e){
+            return new ResponseEntity<>("User is Unauthorized",HttpStatus.UNAUTHORIZED);
+        }
+        try{
+
+            if(userTokenVO == null){
+                return new ResponseEntity<>("User is Unauthorized",HttpStatus.UNAUTHORIZED);
+            }
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             LocalDate startDate = LocalDate.parse(sampleDetailVO.getTestAnalysisStartDate(), formatter);
             LocalDate endDate = LocalDate.parse(sampleDetailVO.getTestAnalysisEndDate(), formatter);
