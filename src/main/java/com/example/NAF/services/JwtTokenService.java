@@ -28,7 +28,7 @@ public class JwtTokenService {
 
             return jws.getBody().getSubject();
         } catch (JwtException e) {
-            return "FAILED";
+            throw new JwtException("Invalid token");
         }
     }
 }
