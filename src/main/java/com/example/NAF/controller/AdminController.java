@@ -29,7 +29,7 @@ public class AdminController {
     private UserRoleRepository userRoleRepository;
 
     @GetMapping(value = "/get-user-detail")
-    public ResponseEntity<List<UserSearchDb[]>> userDetails(@RequestHeader("token") String token){
+    public ResponseEntity<List<UserResponseDetails>> userDetails(@RequestHeader("token") String token){
         UserTokenVO userTokenVO=null ;
         try{
             userTokenVO = jwtTokenService.parseToken(token);
@@ -43,8 +43,17 @@ public class AdminController {
             if(userTokenVO == null){
                 return new ResponseEntity<>(null,HttpStatus.UNAUTHORIZED);
             }
-            List<UserSearchDb[]> users=userRepository.findAllUsersWithRoleMappings();
-            return new ResponseEntity<>(users,HttpStatus.OK);
+            List<UserSearchDb> users=userRepository.findAllUsersWithRoleMappings();
+            List<UserResponseDetails> res = new ArrayList<>();
+
+            for (UserSearchDb userArray : users) {
+                UserResponseDetails userDetailsArray = new UserResponseDetails();
+
+                userDetailsArray = convertUser(userArray);
+
+                res.add(userDetailsArray);
+            }
+            return new ResponseEntity<>(res,HttpStatus.OK);
         }
         catch (Exception e){
             return new ResponseEntity<>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
@@ -180,5 +189,16 @@ public class AdminController {
             return new ResponseEntity<>("User role update request failed",HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
+    }
+
+    private UserResponseDetails convertUser(UserSearchDb user) {
+        UserResponseDetails userDetails = new UserResponseDetails();
+        userDetails.setUserIdentifier(user.getUserIdentifier());
+        userDetails.setName(user.getFirstName() + " " + user.getLastName());
+        userDetails.setEmail(user.getEmail());
+        userDetails.setActiveIndicator(user.getActiveIndicator());
+        userDetails.setCreationDate(user.getCreationDate());
+        userDetails.setUserRole(user.getUserRole());
+        return userDetails;
     }
 }

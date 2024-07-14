@@ -34,9 +34,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Modifying
     @Transactional
-    @Query("SELECT new com.example.NAF.utils.UserSearchDb(u.userIdentifier, u.firstName, u.lastName, u.email, u.activeIndicator, urm.creationDate) " +
+    @Query("SELECT new com.example.NAF.utils.UserSearchDb(u.userIdentifier, u.firstName, u.lastName, u.email, u.activeIndicator, urm.creationDate,urm.userRoleMappingId.userRole.userRoleCode) " +
             "FROM User u JOIN UserRoleMapping urm ON u.userIdentifier = urm.userRoleMappingId.user.userIdentifier")
-    List<UserSearchDb[]> findAllUsersWithRoleMappings();
+    List<UserSearchDb> findAllUsersWithRoleMappings();
 
     @Transactional
     User findByEmail(@Param("email") String email);
